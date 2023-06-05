@@ -1,0 +1,1073 @@
+openapi: 3.1.0
+info:
+  title: Humly Control Panel - REST API docs
+  description: |-
+    API documentation for Humly Control Panel version: v1.0.x
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Humly
+  url: http://humly.com
+servers:
+  - url: https://localhost:3002/api/v1
+paths:
+  /login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      description: Logs user into the system
+      operationId: login
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: password
+                username:
+                  type: string
+                  example: username
+            example:
+              password: password
+              username: username
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - success
+                  data:
+                    type: object
+                    properties:
+                      authToken:
+                        type: string
+                        example: authToken
+                      userId:
+                        type: string
+                        example: userId
+        '401':
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                      - error
+                  message:
+                    type: string
+                    enum:
+                      - Wrong username or password!
+        '403':
+          description: Error
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                UnauthorizedLogin:
+                  $ref: '#/components/examples/UnauthorizedLogin'
+                NotAllowedLogin:
+                  $ref: '#/components/examples/NotAllowedLogin'
+  /logout:
+    get:
+      tags:
+        - Auth
+      summary: Logout
+      description: Logs out the user
+      operationId: logout
+      parameters:
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      responses:
+        '200':
+          description: You've been logged out!       
+        '401':
+          description: Wrong username or password!
+  /clientGroups:
+    post:
+      tags:
+        - Client Groups
+      summary: Create Client Group
+      description: Create Client Group
+      operationId: createClientGroup
+      parameters:
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: HumlyIntegration
+            example:
+              name: HumlyIntegration
+      responses:
+        '200':
+          description: ''
+  /users/integration:
+    get:
+      tags:
+        - Users
+      summary: API Integration Users
+      description: API Integration Users
+      operationId: apiIntegrationUsers
+      parameters:
+        - name: pageNumber
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: pageSize
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: sort
+          in: query
+          schema:
+            type: string
+            example: '{ "any.property": "desc/asc", "any.property": "desc/asc" }'
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      responses:
+        '200':
+          description: ''
+    post:
+      tags:
+        - Users
+      summary: Create User
+      description: Create User
+      operationId: createUser
+      parameters:
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                groupToken:
+                  type: string
+                  example: newClientGroupToken
+                name:
+                  type: string
+                  example: HumlyIntegrationUser
+            example:
+              groupToken: newClientGroupToken
+              name: HumlyIntegrationUser
+      responses:
+        '200':
+          description: ''
+  /users/integration/{XUserId}:
+    get:
+      tags:
+        - Users
+      summary: One API Integration User
+      description: One API Integration User
+      operationId: oneApiIntegrationUser
+      parameters:
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties: {}
+            example: {}
+      responses:
+        '200':
+          description: ''
+    parameters:
+      - name: XUserId
+        in: path
+        required: true
+        schema:
+          type: string
+  /bookings:
+    get:
+      tags:
+        - Bookings
+      summary: Bookings for organizer
+      description: Bookings for organizer
+      operationId: bookingsForOrganizer
+      parameters:
+        - name: organizerUser
+          in: query
+          schema:
+            type: string
+            example: XUserId
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            example: YYYY-MM-DDTHH:MI:SS%2B00:00
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            example: YYYY-MM-DDTHH:MI:SS%2B00:00
+        - name: pageNumber
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: pageSize
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: sort
+          in: query
+          schema:
+            type: string
+            example: '{ "any.property": "desc/asc", "any.property": "desc/asc" }'
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      responses:
+        '200':
+          description: ''
+    post:
+      tags:
+        - Bookings
+      summary: Create Booking
+      description: Create Booking
+      operationId: createBooking
+      parameters:
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                endDate:
+                  type: string
+                  example: YYYY-MM-DDTHH:MI:SS+00:00
+                roomId:
+                  type: string
+                  example: roomId
+                startDate:
+                  type: string
+                  example: YYYY-MM-DDTHH:MI:SS+00:00
+                subject:
+                  type: string
+                  example: Humly meeting
+            example:
+              endDate: YYYY-MM-DDTHH:MI:SS+00:00
+              roomId: roomId
+              startDate: YYYY-MM-DDTHH:MI:SS+00:00
+              subject: Humly meeting
+      responses:
+        '200':
+          description: ''
+  /bookings/{bookingId}:
+    delete:
+      tags:
+        - Bookings
+      summary: Delete Booking
+      description: Delete Booking
+      operationId: deleteBooking
+      parameters:
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties: {}
+            example: {}
+      responses:
+        '200':
+          description: ''
+    patch:
+      tags:
+        - Bookings
+      summary: Patch Booking
+      description: Patch Booking
+      operationId: patchBooking
+      parameters:
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                endDate:
+                  type: string
+                  example: YYYY-MM-DDTHH:MI:SS+00:00
+                startDate:
+                  type: string
+                  example: YYYY-MM-DDTHH:MI:SS+00:00
+                subject:
+                  type: string
+                  example: string
+            example:
+              endDate: YYYY-MM-DDTHH:MI:SS+00:00
+              startDate: YYYY-MM-DDTHH:MI:SS+00:00
+              subject: string
+      responses:
+        '200':
+          description: ''
+    parameters:
+      - name: bookingId
+        in: path
+        required: true
+        schema:
+          type: string
+  /bookings/checkedIn:
+    put:
+      tags:
+        - Bookings
+      summary: Check In Booking
+      description: Check In Booking
+      operationId: checkInBooking
+      parameters:
+        - name: bookingId
+          in: query
+          schema:
+            type: string
+            example: bookingId
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties: {}
+            example: {}
+      responses:
+        '200':
+          description: ''
+  /desks:
+    get:
+      tags:
+        - Desks
+      summary: All Desks
+      description: All Desks
+      operationId: allDesks
+      parameters:
+        - name: country
+          in: query
+          schema:
+            type: string
+            example: '%Country Name%'
+        - name: city
+          in: query
+          schema:
+            type: string
+            example: '%City Name%'
+        - name: building
+          in: query
+          schema:
+            type: string
+            example: '%Building Name%'
+        - name: floor
+          in: query
+          schema:
+            type: string
+            example: '%Flor Name%'
+        - name: date
+          in: query
+          schema:
+            type: string
+            example: YYYY-MM-DD
+        - name: status
+          in: query
+          schema:
+            type: string
+            example: available
+        - name: pageNumber
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: pageSize
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: sort
+          in: query
+          schema:
+            type: string
+            example: '{ "any.property": "desc/asc", "any.property": "desc/asc" }'
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: ''
+  /desks/{deskId}:
+    get:
+      tags:
+        - Desks
+      summary: One Desks
+      description: One Desks
+      operationId: oneDesks
+      parameters:
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: ''
+    parameters:
+      - name: deskId
+        in: path
+        required: true
+        schema:
+          type: string
+  /devices:
+    get:
+      tags:
+        - Devices
+      summary: All Devices
+      description: All Devices
+      operationId: allDevices
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            example: Online/Offline/Sleeping/Unassigned
+        - name: pageNumber
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: pageSize
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: sort
+          in: query
+          schema:
+            type: string
+            example: '{ "any.property": "desc/asc", "any.property": "desc/asc" }'
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: ''
+  /devices/{deviceId}:
+    get:
+      tags:
+        - Devices
+      summary: One Device
+      description: One Device
+      operationId: oneDevice
+      parameters:
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: ''
+    parameters:
+      - name: deviceId
+        in: path
+        required: true
+        schema:
+          type: string
+  /wayFindings/{guideScreenId}:
+    get:
+      tags:
+        - Guide Screens
+      summary: GuideScreen
+      description: GuideScreen
+      operationId: guidescreen
+      responses:
+        '200':
+          description: ''
+    parameters:
+      - name: guideScreenId
+        in: path
+        required: true
+        schema:
+          type: string
+  /wayFindings/{guideScreenId}/logo:
+    get:
+      tags:
+        - Guide Screens
+      summary: GuideScreenLogo
+      description: GuideScreenLogo
+      operationId: guidescreenlogo
+      responses:
+        '200':
+          description: ''
+    parameters:
+      - name: guideScreenId
+        in: path
+        required: true
+        schema:
+          type: string
+  /rooms:
+    get:
+      tags:
+        - Rooms
+      summary: All Rooms
+      description: All Rooms
+      operationId: allRooms
+      parameters:
+        - name: country
+          in: query
+          schema:
+            type: string
+            example: '%Country Name%'
+        - name: city
+          in: query
+          schema:
+            type: string
+            example: '%City Name%'
+        - name: building
+          in: query
+          schema:
+            type: string
+            example: '%Building Name%'
+        - name: floor
+          in: query
+          schema:
+            type: string
+            example: '%Flor Name%'
+        - name: minNumberOfSeats
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: maxNumberOfSeats
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: pageNumber
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: pageSize
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: sort
+          in: query
+          schema:
+            type: string
+            example: '{ "any.property": "desc/asc", "any.property": "desc/asc" }'
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: ''
+  /rooms/{roomId}:
+    get:
+      tags:
+        - Rooms
+      summary: One Room
+      description: One Room
+      operationId: oneRoom
+      parameters:
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: ''
+    parameters:
+      - name: roomId
+        in: path
+        required: true
+        schema:
+          type: string
+  /rooms/available:
+    get:
+      tags:
+        - Rooms
+      summary: Available Rooms
+      description: Available Rooms
+      operationId: availableRooms
+      parameters:
+        - name: seats
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            example: YYYY-MM-DDTHH:MI:SS%2B00:00
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            example: YYYY-MM-DDTHH:MI:SS%2B00:00
+        - name: location
+          in: query
+          schema:
+            type: string
+            example: |-
+              {
+              "countryId": "%Country ID%",
+              "cityId": "%City ID%",
+              "buildingId": "%Building ID%",
+              "floorId": "%Flor ID%"
+              }
+        - name: equipment
+          in: query
+          schema:
+            type: string
+            example: |-
+              {
+              "lights": boolean,
+              "projector": boolean,
+              "computer": boolean,
+              "teleConference": boolean,
+              "wifi": boolean,
+              "whiteboard": boolean,
+              "videoConference": boolean,
+              "display": boolean,
+              "minto": boolean,
+              "ac": boolean
+              }
+        - name: customEquipment
+          in: query
+          schema:
+            type: string
+            example: |-
+              [{
+              "_id": "%Custom Equipment ID%",
+              "isChecked": boolean
+              }]
+        - name: pageNumber
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: pageSize
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: sort
+          in: query
+          schema:
+            type: string
+            example: '{ "any.property": "desc/asc", "any.property": "desc/asc" }'
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties: {}
+            example: {}
+      responses:
+        '200':
+          description: ''
+  /rooms/{roomId}/equipment:
+    get:
+      tags:
+        - Rooms
+      summary: Equipment
+      description: Equipment
+      operationId: equipment
+      parameters:
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties: {}
+            example: {}
+      responses:
+        '200':
+          description: ''
+    patch:
+      tags:
+        - Rooms
+      summary: Report Equipment
+      description: Report Equipment
+      operationId: reportEquipment
+      parameters:
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                customEquipment:
+                  type: string
+                  example: '[{ "name": "%Equipment Name%", "isChecked": boolean}]'
+                equipment:
+                  type: string
+                  example: |-
+                    {
+                    "lights": boolean,
+                    "projector": boolean,
+                    "computer": boolean,
+                    "teleConference": boolean,
+                    "wifi": boolean,
+                    "whiteboard": boolean,
+                    "videoConference": boolean,
+                    "display": boolean,
+                    "minto": boolean,
+                    "ac": boolean
+                    }
+            example:
+              customEquipment: '[{ "name": "%Equipment Name%", "isChecked": boolean}]'
+              equipment: |-
+                {
+                "lights": boolean,
+                "projector": boolean,
+                "computer": boolean,
+                "teleConference": boolean,
+                "wifi": boolean,
+                "whiteboard": boolean,
+                "videoConference": boolean,
+                "display": boolean,
+                "minto": boolean,
+                "ac": boolean
+                }
+      responses:
+        '200':
+          description: ''
+    parameters:
+      - name: roomId
+        in: path
+        required: true
+        schema:
+          type: string
+  /structures:
+    get:
+      tags:
+        - Structures
+      summary: All Structures
+      description: All Structures
+      operationId: allStructures
+      parameters:
+        - name: pageNumber
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: pageSize
+          in: query
+          schema:
+            type: string
+            example: number
+        - name: sort
+          in: query
+          schema:
+            type: string
+            example: '{ "any.property": "desc/asc", "any.property": "desc/asc" }'
+        - name: X-User-Id
+          in: header
+          schema:
+            type: string
+            example: XUserId
+        - name: X-Auth-Token
+          in: header
+          schema:
+            type: string
+            example: XAuthToken
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: ''
+  /device_authorization:
+    post:
+      tags:
+        - Device auth
+      summary: Device authentication
+      description: Authenticates device
+      operationId: deviceAuth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                client_id:
+                  type: string
+                  example: client_id
+                  description: Unique device identifier
+                scope:
+                  type: string
+                  example: scope
+                  description: Device type
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  client_id:
+                    type: string
+                    example: client_id
+                  scope:
+                    type: string
+                    example: scope
+                  user_code:
+                    type: string
+                    example: user_code
+                  device_code:
+                    type: string
+                    example: device_code
+                  expires_in:
+                    type: string
+                    example: expires_in
+                  interval:
+                    type: string
+                    example: interval
+                  verification_uri:
+                    type: string
+                    example: verification_uri
+                  verification_uri_complete:
+                    type: string
+                    example: verification_uri_complete
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+tags:
+  - name: Auth
+  - name: Device auth
+  - name: Client Groups
+  - name: Users
+  - name: Bookings
+  - name: Desks
+  - name: Devices
+  - name: Guide Screens
+  - name: Rooms
+  - name: Structures
+components:
+  examples:
+    UnauthorizedLogin:
+      value:
+        status: error
+        message: You are not authorized!
+      summary: Unauthorized login
+    NotAllowedLogin:
+      value:
+        status: error
+        message: This type of user is not allowed to login!
+      summary: User isn't allowed to login
